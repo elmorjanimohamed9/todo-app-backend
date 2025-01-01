@@ -1,25 +1,53 @@
-import axios from 'axios';
+import axios, { AxiosInstance } from 'axios';
 import { Todo, CreateTodoDto } from '../types/todo';
 
-const API_URL = import.meta.env.VITE_API_URL;
+const axiosInstance: AxiosInstance = axios.create({
+  baseURL: process.env.VITE_API_URL, 
+  timeout: 15000,
+  headers: {
+    'Content-Type': 'application/json'
+  }
+});
 
 export const TodoAPI = {
   async getAllTodos(): Promise<Todo[]> {
-    const response = await axios.get(`${API_URL}/todo`);
-    return response.data;
+    try {
+      const response = await axiosInstance.get('/todo');
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching todos:', error);
+      throw error;
+    }
   },
 
   async createTodo(todo: CreateTodoDto): Promise<Todo> {
-    const response = await axios.post(`${API_URL}/todo`, todo);
-    return response.data;
+    try {
+      const response = await axiosInstance.post('/todo', todo);
+      return response.data;
+    } catch (error) {
+      console.error('Error creating todo:', error);
+      throw error;
+    }
   },
 
   async updateTodo(id: string, todo: Partial<Todo>): Promise<Todo> {
-    const response = await axios.patch(`${API_URL}/todo/${id}`, todo);
-    return response.data;
+    try {
+      const response = await axiosInstance.patch(`/todo/${id}`, todo);
+      return response.data;
+    } catch (error) {
+      console.error('Error updating todo:', error);
+      throw error;
+    }
   },
 
   async deleteTodo(id: string): Promise<void> {
-    await axios.delete(`${API_URL}/todo/${id}`);
+    try {
+      await axiosInstance.delete(`/todo/${id}`);
+    } catch (error) {
+      console.error('Error deleting todo:', error);
+      throw error;
+    }
   }
 };
+
+export const api = axiosInstance;
